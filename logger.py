@@ -13,6 +13,7 @@ import sys
 import json
 import inspect
 import datetime
+import collections
 
 class Logger(object):
     INFO = 0
@@ -62,19 +63,22 @@ class Logger(object):
                     raise
         return Logger.__instance
 
+    def __call__(self, *args, **kwargs):
+        return self.log_message(*args, **kwargs, stack_displacement=2)
+
     def set_level(self, log_level):
         self.g_log_level = log_level
 
     def set_json_compact(self, is_compact):
         self.compactjson = is_compact
 
-    def log_message(self, message, log_level=INFO, break_line=True, print_header=True):
+    def log_message(self, message, log_level=INFO, break_line=True, print_header=True, stack_displacement=1):
         if log_level < self.g_log_level:
             return -1
         if not self.g_logs_file:
             raise Exception('Critical: Log file not defined. Do you have write permissions for {}?'.format(self.g_logs_path))
         
-        caller_info = inspect.getframeinfo(inspect.stack()[1][0])
+        caller_info = inspect.getframeinfo(inspect.stack()[stack_displacement][0])
 
         if print_header:
             message_header = '[{} {:%Y-%m-%d %H:%M:%S}]'.format(self.indicator[log_level],
@@ -125,8 +129,17 @@ class Logger(object):
                 self.perf_memory[group][key] = [dictionary[key]]
 
         if should_print:
-            message = ', '.join(['{}:{}'.format(key, dictionary[key]) for key in dictionary.keys()])
-            self.log_message(message, log_level)
+            def print_subitem(prefix, subdictionary, stack_displacement=3):
+                for key, value in subdictionary.items():
+                    message = prefix + key + ':'
+                    if not isinstance(value, collections.Mapping):
+                        message += ' ' + str(value)
+                    self.log_message(message, log_level, stack_displacement=stack_displacement)
+                    if isinstance(value, collections.Mapping):
+                        print_subitem(prefix + '  ', value, stack_displacement=stack_displacement+1)
+
+            self.log_message('root:', stack_displacement=2)
+            print_subitem('  ', dictionary, stack_displacement=3)
 
     def flush(self):
         with open(self.g_json_path, 'w') as json_file:
