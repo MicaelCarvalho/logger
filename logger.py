@@ -58,6 +58,7 @@ class Logger(object):
                     Logger.__instance.g_logs_file = open(os.path.join(log_path, 'logs.txt'), 'a+')
                     Logger.__instance.g_json_path = os.path.join(log_path, 'logs.json')
                     Logger.__instance.g_logs_path = log_path
+                    Logger.__instance.reload_json()
                 except:
                     Logger.__instance = None
                     raise
@@ -140,6 +141,11 @@ class Logger(object):
 
             self.log_message('{}: {}'.format(group, description), log_level, stack_displacement=2)
             print_subitem('  ', dictionary, stack_displacement=3)
+
+    def reload_json(self):
+        if os.path.isfile(self.g_json_path):
+            with open(self.g_json_path, 'r') as json_file:
+                self.perf_memory = json.load(json_file)
 
     def flush(self):
         with open(self.g_json_path, 'w') as json_file:
