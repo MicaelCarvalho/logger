@@ -130,17 +130,21 @@ class Logger(object):
                 self.perf_memory[group][key] = [dictionary[key]]
 
         if should_print:
-            def print_subitem(prefix, subdictionary, stack_displacement=3):
-                for key, value in subdictionary.items():
-                    message = prefix + key + ':'
-                    if not isinstance(value, collections.Mapping):
-                        message += ' ' + str(value)
-                    self.log_message(message, log_level, stack_displacement=stack_displacement)
-                    if isinstance(value, collections.Mapping):
-                        print_subitem(prefix + '  ', value, stack_displacement=stack_displacement+1)
+            self.log_dict_message(group, dictionary, description, log_level)
 
-            self.log_message('{}: {}'.format(group, description), log_level, stack_displacement=2)
-            print_subitem('  ', dictionary, stack_displacement=3)
+    def log_dict_message(self, group, dictionary, description='', log_level=SUMMARY):
+        def print_subitem(prefix, subdictionary, stack_displacement=3):
+            for key, value in subdictionary.items():
+                message = prefix + key + ':'
+                if not isinstance(value, collections.Mapping):
+                    message += ' ' + str(value)
+                self.log_message(message, log_level, stack_displacement=stack_displacement)
+                if isinstance(value, collections.Mapping):
+                    print_subitem(prefix + '  ', value, stack_displacement=stack_displacement+1)
+
+        self.log_message('{}: {}'.format(group, description), log_level, stack_displacement=2)
+        print_subitem('  ', dictionary, stack_displacement=3)
+
 
     def reload_json(self):
         if os.path.isfile(self.g_json_path):

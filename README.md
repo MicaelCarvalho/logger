@@ -100,17 +100,32 @@ Prints a message (string) on screen and on the log text file, if it's log level 
 `print_header` controls if the heading part of the log, where log level, timestamp and filename are displayed (defaults to True). If you are continuing a log with `break_line = False`, you probably want to set this to `False`, in order to keep things tidy.
 
 
-#### logger.log_dict(group, dictionary, [should_print, log_level])
+#### logger.log_dict(group, dictionary, [description, should_print, log_level])
 
 Stores a dictionary of values, to be logged later to a JSON file. Please note that the keys of the dictionary must be consistent inside each group.
 
 `group` should be a string representing the name of the logging group (e.g. 'trn', 'val', or 'tst', for standard training, validating and test logs)
 
-`dictionary` contains the dictionary to be logged. It should NOT have nested dictionaries, only key-values entries. All values will be stacked into a list, stored under the key's name, and this will be saved later to a JSON file, should the programmer call the `flush` function.
+`dictionary` contains the dictionary to be logged. All values will be stacked into a list, stored under the key's name, and this will be saved later to a JSON file, should the programmer call the `flush` function.
+
+`description` may contain a message that will not be logged inside the JSON, but printed on the screen if `should_print` is True.
 
 `should_print` specifies wether we should print the pairs key-value of this dictionary as a message on the screen as well. This parameter defaults to False, and nothing is shown on the screen nor on the text log file (only on the JSON, after `flush` is called).
 
 `log_level` defines the log level of the message that will be printed if `should_print` is set to `True`. Defaults to `SUMMARY`.
+
+
+#### logger.log_dict_message(group, dictionary, [description, log_level])
+
+Formats a dictionary and calls `log_message` in a structured way.
+
+`group` should be a string representing the name of the logging group (e.g. 'trn', 'val', or 'tst', for standard training, validating and test logs)
+
+`dictionary` contains the dictionary to be printed.
+
+`description` may contain a message that will be printed on the screen.
+
+`log_level` defines the log level of the message that will be printed. Defaults to `SUMMARY`.
 
 
 #### logger.flush()
