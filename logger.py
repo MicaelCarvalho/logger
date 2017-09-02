@@ -134,7 +134,7 @@ class Logger(object):
 
     def log_dict_message(self, group, dictionary, description='', log_level=SUMMARY):
         def print_subitem(prefix, subdictionary, stack_displacement=3):
-            for key, value in subdictionary.items():
+            for key, value in sorted(subdictionary.items()):
                 message = prefix + key + ':'
                 if not isinstance(value, collections.Mapping):
                     message += ' ' + str(value)
