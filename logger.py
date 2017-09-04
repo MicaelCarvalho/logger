@@ -112,7 +112,7 @@ class Logger(object):
         if log_level==self.ERROR:
             raise Exception(message)
 
-    def log_dict(self, group, dictionary, description='', should_print=False, log_level=SUMMARY):
+    def log_dict(self, group, dictionary, description='', stack_displacement=2, should_print=False, log_level=SUMMARY):
         if group not in self.perf_memory:
             self.perf_memory[group] = {}
         else:
@@ -130,9 +130,9 @@ class Logger(object):
                 self.perf_memory[group][key] = [dictionary[key]]
 
         if should_print:
-            self.log_dict_message(group, dictionary, description, log_level)
+            self.log_dict_message(group, dictionary, description, stack_displacement+1, log_level)
 
-    def log_dict_message(self, group, dictionary, description='', log_level=SUMMARY):
+    def log_dict_message(self, group, dictionary, description='', stack_displacement=2, log_level=SUMMARY):
         def print_subitem(prefix, subdictionary, stack_displacement=3):
             for key, value in sorted(subdictionary.items()):
                 message = prefix + key + ':'
@@ -142,8 +142,8 @@ class Logger(object):
                 if isinstance(value, collections.Mapping):
                     print_subitem(prefix + '  ', value, stack_displacement=stack_displacement+1)
 
-        self.log_message('{}: {}'.format(group, description), log_level, stack_displacement=2)
-        print_subitem('  ', dictionary, stack_displacement=3)
+        self.log_message('{}: {}'.format(group, description), log_level, stack_displacement=stack_displacement)
+        print_subitem('  ', dictionary, stack_displacement=stack_displacement+1)
 
 
     def reload_json(self):
