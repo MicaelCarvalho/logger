@@ -4,6 +4,8 @@ This is a free, lightweight, and flexible logger library
 </b>
 <br/><br/>
 Feel free to use it in your projects and to send contributions
+<br/>
+At the moment, compatibility is ensured for Python 3
 </p>
 
 ### Getting Started
@@ -26,12 +28,13 @@ logger = Logger('/tmp')
 
 # This part tests the message types
 logger.log_message('Test 1')
-logger.log_message('Test 2', Logger.INFO)
-logger.log_message('Test 3', Logger.SUMMARY)
-logger.log_message('Test 4', Logger.WARNING)
+logger.log_message('Test 2', log_level=Logger.DEBUG)
+logger.log_message('Test 3', log_level=Logger.INFO)
+logger.log_message('Test 4', log_level=Logger.SUMMARY)
+logger.log_message('Test 5', log_level=Logger.WARNING)
 # There should be an exception on the next line, because it is an error
-logger.log_message('Test 5', Logger.ERROR)
-logger.log_message('Test 6', Logger.SYSTEM)
+logger.log_message('Test 6', log_level=Logger.ERROR)
+logger.log_message('Test 7', log_level=Logger.SYSTEM)
 
 # This part shows the usage of dictionary logging. This is useful for logging your performances/scores during the training of a neural network, for example
 logger.log_dict('trn', {'a': 1, 'b': 2, 'c': 3})
@@ -74,11 +77,13 @@ Instantiates the logger class. It is implemented as a singleton, therefore you o
 #### logger.set_level(log_level)
 
 Changes the minimal level for a message to be logged (both on screen and on the log file). Available values are:
-1. Logger.INFO (default, everything is logged)
-2. Logger.SUMMARY
-3. Logger.WARNING
-4. Logger.ERROR
-5. Logger.SYSTEM
+
+* Logger.DEBUG
+* Logger.INFO (default, everything is logged)
+* Logger.SUMMARY
+* Logger.WARNING
+* Logger.ERROR
+* Logger.SYSTEM
 
 If the log level is set to WARNING, all further INFO and SUMMARY messages will be suppressed until the log level is lowered again.
 
